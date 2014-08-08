@@ -5,6 +5,13 @@ angular.module('barrier', [])
       var count = 0;
       var deferred = $q.defer();
       var shouldReject = false;
+      var isCompleted = false;
+
+      function validate() {
+        if (isCompleted) {
+          throw new Error('barrier reached!')
+        }
+      }
 
       function tryResolve() {
         if (++count == n) {
@@ -13,8 +20,7 @@ angular.module('barrier', [])
           } else {
             deferred.resolve(args);
           }
-          args = [];
-          count = 0;
+          isCompleted = true;
         }
       }
 
@@ -22,18 +28,19 @@ angular.module('barrier', [])
         shouldReject = true;
         if (++count == n) {
           deferred.reject(args);
-          args = [];
-          count = 0;
+          isCompleted = true;
         }
       }
 
       return {
         promise: deferred.promise,
         callback: function() {
+          validate();  // TODO: validation should happen when a callback is added.
           args.push(arguments);
           tryResolve();
         },
         errback: function() {
+          validate();
           args.push(arguments);
           tryReject();
         }

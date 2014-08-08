@@ -12,19 +12,19 @@ angular.module('barrier-demo', ['barrier'])
   .run(function($timeout, $interval, $log, barrier) {
     var b = barrier.create(3);
 
-    function randomTimeout(max) {
+    function randomTimeout(max, cb) {
       max = max || 5;
       var time = (Math.ceil(Math.random() * max) + 1) * 1000;
       $log.info('timing out for: ' + time);
       $timeout(function() {
         $log.info('callback: ' + time);
-        b.callback(time);
+        cb(time);
       }, time);
     }
 
-    randomTimeout(10);
-    randomTimeout(10);
-    randomTimeout(7);
+    randomTimeout(10, b.callback);
+    randomTimeout(10, b.callback);
+    randomTimeout( 7, b.callback);
     var i = $interval(function() {$log.info('tick')}, 1000);
 
     b.promise.then(function(results) {
