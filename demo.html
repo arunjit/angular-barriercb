@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html ng-app="barrier-demo">
+<head>
+</head>
+<body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.17/angular.min.js"></script>
+<script src="barrier.js"></script>
+<script>
+
+angular.module('barrier-demo', ['barrier'])
+  .run(function($timeout, $interval, $log, barrier) {
+    var b = barrier.create(3);
+
+    function randomTimeout(max) {
+      max = max || 5;
+      var time = (Math.ceil(Math.random() * max) + 1) * 1000;
+      $log.info('timing out for: ' + time);
+      $timeout(function() {
+        $log.info('callback: ' + time);
+        b.callback(time);
+      }, time);
+    }
+
+    randomTimeout(10);
+    randomTimeout(10);
+    randomTimeout(7);
+    var i = $interval(function() {$log.info('tick')}, 1000);
+
+    b.promise.then(function(results) {
+      results.forEach(function(result) {
+        $log.info(result[0] || 'no result');
+      });
+      $interval.cancel(i);
+    });
+  });
+
+</script>
+</body>
+</html>
+
