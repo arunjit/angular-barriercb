@@ -22,9 +22,9 @@ angular.module('barrier-demo', ['barrier'])
       }, time);
     }
 
-    randomTimeout(10, b.callback);
-    randomTimeout(10, b.callback);
-    randomTimeout( 7, b.callback);
+    randomTimeout(10, b.getCallback());
+    randomTimeout(10, b.getCallback());
+    randomTimeout( 7, b.getCallback());
     var i = $interval(function() {$log.info('tick')}, 1000);
 
     b.promise.then(function(results) {
@@ -33,6 +33,10 @@ angular.module('barrier-demo', ['barrier'])
       });
       $interval.cancel(i);
     });
+
+
+    // This should throw an error
+    b.getCallback();
   });
 
 </script>
